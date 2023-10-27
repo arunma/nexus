@@ -1,0 +1,76 @@
+# rustfmt configuration file
+
+# Maximum line width for code formatting
+max_width = 120
+single_line_if_else_max_width = 120
+single_line_let_else_max_width = 120
+
+# Control the indentation of blocks
+#[[indent]]
+#  # Pattern for the alignment of fields
+#  style = "Visual"
+#  # Number of spaces for each tab
+#  tab_spaces = 4
+
+# The number of columns used for tab widths
+tab_spaces = 4
+
+# How to indent match arms and match blocks
+indent_match_arms = true
+
+# The number of spaces used for indentation
+indent_style = "Block"
+indent_width = 4
+
+# Where to place the opening brace of a struct or enum definition
+brace_style = "SameLineWhere"
+
+# Use the vertical alignment of fields and arguments
+#use_small_heuristics = true
+
+# How to align struct fields
+#struct_field_align_threshold = 16
+
+# Ensure a newline at the end of each file
+newline_eof = true
+
+# Convert some multi-line if-else statements to match expressions
+#normalize_doc_attributes = true
+
+# Treat tuple structs as units rather than as parentheses
+reorder_imports = true
+
+# Enable the use of where clauses in associated type bounds
+format_trait_bounds = true
+
+# Whether to respect doc comments when determining item boundaries
+format_strings = false
+
+# Ensure a space before and after the range syntax
+#format_range_syntax = true
+
+# Specify the number of blank lines that should be left between items
+blank_lines_between_items = 1
+
+# Specify the maximum number of blank lines to be kept
+#consecutive_blank_lines = 2
+
+# Specify the behavior of struct field formatting
+#[struct_field]
+#  # Whether to break struct fields if they would exceed the max_width
+#  where_style = "IfLet"
+
+# Specify the behavior of struct literal formatting
+#[struct_lit]
+#  # Whether to break struct literals if they would exceed the max_width
+#  where_style = "IfLet"
+
+# Specify the behavior of enum variant formatting
+#[enum_variant]
+#  # Whether to break enum variants if they would exceed the max_width
+#  where_style = "IfLet"
+
+# Specify the behavior of struct field formatting
+#[variant]
+#  # Whether to break match arms if they would exceed the max_width
+#  where_style = "IfLet"c
