@@ -45,6 +45,13 @@ impl UserRepository {
             .await
             .context("Unable to insert user record into db")
     }
+
+    pub async fn get_user_by_id(&self, user_id: Uuid) -> anyhow::Result<UserEntity> {
+        sqlx::query_as!(UserEntity, r#"SELECT * FROM users WHERE id =$1"#, user_id)
+            .fetch_one(&self.db)
+            .await
+            .context("Unable to find any user with the id")
+    }
 }
 
 #[derive(Debug, FromRow, Clone)]

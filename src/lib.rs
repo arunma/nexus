@@ -1,31 +1,38 @@
+extern crate core;
+
+use std::sync::Arc;
+
 use redis::Client;
 use sqlx::PgPool;
 
 use crate::config::Config;
+use crate::services::token_service::TokenService;
 
-pub mod config;
-pub mod _route;
-pub mod model;
-pub mod _handler;
 pub mod auth;
-pub mod token;
-
+pub mod config;
+pub mod domain;
+pub mod errors;
+pub mod repositories;
+pub mod routes;
+pub mod service_register;
 pub mod services;
 
-pub mod repositories;
-
-pub mod routes;
-
-pub mod errors;
-
-pub mod service_register;
-
-pub mod router;
-
-pub mod domain;
-
+#[derive(Clone)]
 pub struct AppState {
     pub config: Config,
     pub db: PgPool,
     pub redis: Client,
+    pub token_service: Arc<TokenService>,
+}
+
+impl AppState {
+    pub fn new(config: Config, db: PgPool, redis: Client) -> Self {
+        let token_service = Arc::new(TokenService::new(config.clone(), redis.clone(), db.clone()));
+        Self {
+            config,
+            db,
+            redis,
+            token_service,
+        }
+    }
 }

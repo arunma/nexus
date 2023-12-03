@@ -2,7 +2,9 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use thiserror::Error;
 
-use crate::errors::ApiError::{BadRequest, InternalServerErrorWithContext, InvalidLoginAttempt, NotFound, ObjectConflict, Unauthorized};
+use crate::errors::ApiError::{
+    BadRequest, InternalServerErrorWithContext, InvalidLoginAttempt, NotFound, ObjectConflict, Unauthorized,
+};
 
 pub type ApiResult<T> = Result<T, ApiError>;
 
@@ -29,12 +31,6 @@ pub enum ApiError {
     InternalServerErrorWithContext(String),
     #[error("{0}")]
     ObjectConflict(String),
-
-    /*#[error("unprocessable request has occurred")]
-    UnprocessableEntity { errors: ErrorMap },*/
-
-    /*#[error(transparent)]
-    ValidationError(#[from] ValidationErrors),*/
     #[error(transparent)]
     AnyhowError(#[from] anyhow::Error),
 }

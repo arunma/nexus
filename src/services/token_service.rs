@@ -2,8 +2,10 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{encode, EncodingKey, Header};
+use redis::Client;
 use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::config::Config;
@@ -12,7 +14,7 @@ use crate::repositories::token_repository::TokenRepository;
 
 #[derive(Clone)]
 pub struct TokenService {
-    config: Arc<Config>,
+    config: Config,
     token_repository: Arc<TokenRepository>,
 }
 
@@ -34,10 +36,10 @@ pub struct TokenDetails {
 }
 
 impl TokenService {
-    pub fn new(config: Arc<Config>, token_repository: Arc<TokenRepository>) -> Self {
+    pub fn new(config: Config, redis: Client, db:PgPool) -> Self {
         Self {
             config,
-            token_repository,
+            token_repository: Arc::new(TokenRepository::new(redis.clone(), db.clone())),
         }
     }
 
@@ -101,28 +103,5 @@ impl TokenService {
             .await;
 
         Ok(token_details.token)
-    }
-
-    pub fn verify_and_decode_jwt_token(&self, token: &str) -> ApiResult<TokenDetails> {
-        let validation = Validation::new(Algorithm::default());
-
-        let decoded = decode::<TokenClaims>(
-            token,
-            &DecodingKey::from_base64_secret(&self.config.access_token_secret).map_err(|_e| {
-                ApiError::InternalServerErrorWithContext("Unable to decode using access_token_string".to_string())
-            })?,
-            &validation,
-        )
-        .map_err(|e| ApiError::BadRequest(format!("Unable to decode token: {e}")))?;
-
-        let user_id = Uuid::from_str(decoded.claims.sub.as_str()).unwrap();
-        let token_uuid = Uuid::from_str(decoded.claims.token_uuid.as_str()).unwrap();
-
-        Ok(TokenDetails {
-            token: token.to_string(),
-            token_uuid,
-            user_id,
-            expires_in: decoded.claims.exp,
-        })
     }
 }

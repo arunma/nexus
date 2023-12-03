@@ -22,11 +22,6 @@ pub struct Config {
 
     #[clap(long, env)]
     pub access_token_secret: String,
-    /*#[clap(long, env)]
-    pub access_token_private_key: String,
-
-    #[clap(long, env)]
-    pub access_token_public_key: String,*/
 
     #[clap(long, env)]
     pub access_token_expires_in: String,
@@ -36,11 +31,6 @@ pub struct Config {
 
     #[clap(long, env)]
     pub refresh_token_secret: String,
-    /*#[clap(long, env)]
-    pub refresh_token_private_key: String,
-
-    #[clap(long, env)]
-    pub refresh_token_public_key: String,*/
 
     #[clap(long, env)]
     pub refresh_token_expires_in: String,
