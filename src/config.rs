@@ -17,11 +17,11 @@ pub struct AppConfig {
     pub request: HashMap<String, String>,
     pub response: HashMap<String, String>,
     pub sql: String,
-    pub db: DbConfig,
+    //pub db: DbConfig,
     pub api: ApiConfig,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+/*#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DbConfig {
     pub driver: String,
     pub hostname: String,
@@ -32,7 +32,7 @@ pub struct DbConfig {
     pub warehouse: String,
     pub schema: String,
     pub role: String,
-}
+}*/
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ApiConfig {

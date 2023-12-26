@@ -1,0 +1,10 @@
+[ODBC Data Sources]
+snowflake = SnowflakeDSIIDriver
+
+[snowflake]
+Driver=/usr/lib/snowflake_odbc/lib/libSnowflake.so
+server=XXX-YYYY.snowflakecomputing.com
+uid=PLACEHOLDER_USER_ID
+pwd=PLACEHOLDER_PASSWORD
+role=ACCOUNTADMIN
+warehouse=nexus_wh

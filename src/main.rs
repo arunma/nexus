@@ -8,7 +8,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
 
-use nexus::config::{AppConfig, DbConfig};
+use nexus::config::{AppConfig};
 use nexus::errors::ApiError;
 use nexus::routes::AppController;
 use nexus::service_register::ServiceRegister;
@@ -27,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let pool = create_db_manager(&config.db);
+    let pool = create_db_manager();
     let tera = create_tera(&config).unwrap();
     let app_state = AppState::new(config.clone());
 
@@ -40,8 +40,8 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn create_db_manager(db_cfg: &DbConfig) -> ODBCConnectionManager {
-    let db_url = format!(
+pub fn create_db_manager() -> ODBCConnectionManager {
+   /* let db_url = format!(
         "Driver={};server={};database={};schema={};warehouse={};role={};UID={};PWD={}",
         db_cfg.driver,
         db_cfg.hostname,
@@ -52,7 +52,8 @@ pub fn create_db_manager(db_cfg: &DbConfig) -> ODBCConnectionManager {
         db_cfg.username,
         db_cfg.password.expose_secret()
     );
-    ODBCConnectionManager::new(db_url, 4)
+    ODBCConnectionManager::new(db_url, 4)*/
+    ODBCConnectionManager::new("DSN=snowflake", 4)
 }
 
 fn create_tera(app_cfg: &AppConfig) -> Result<Tera, ApiError> {

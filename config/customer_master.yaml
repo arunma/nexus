@@ -13,16 +13,6 @@ sql: |
         nexus_db.public.customer_master
   limit 10
 #Replace with {{customer_id}} in the sql
-db:
-  driver: SnowflakeDSIIDriver
-  hostname: nkiamin-ho49824.snowflakecomputing.com
-  username:
-  password:
-  database: nexus_db
-  schema: nexus
-  role: ACCOUNTADMIN
-  warehouse: nexus_wh
-
 api:
   port: 8080
   host: 0.0.0.0
