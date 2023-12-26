@@ -1,5 +1,5 @@
+use crate::config::AppConfig;
 use std::sync::Arc;
-use crate::config::{ApiConfig, AppConfig};
 
 use crate::errors::{ApiError, ApiResult};
 

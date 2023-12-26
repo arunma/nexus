@@ -8,11 +8,11 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
 
-use axum_sqlx_jwt_starter::config::{AppConfig, DbConfig};
-use axum_sqlx_jwt_starter::errors::ApiError;
-use axum_sqlx_jwt_starter::routes::AppController;
-use axum_sqlx_jwt_starter::service_register::ServiceRegister;
-use axum_sqlx_jwt_starter::AppState;
+use nexus::config::{AppConfig, DbConfig};
+use nexus::errors::ApiError;
+use nexus::routes::AppController;
+use nexus::service_register::ServiceRegister;
+use nexus::AppState;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -56,7 +56,7 @@ pub fn create_db_manager(db_cfg: &DbConfig) -> ODBCConnectionManager {
 }
 
 fn create_tera(app_cfg: &AppConfig) -> Result<Tera, ApiError> {
-    let mut tera = Tera::default(); //This needs to go up.  Currently this is getting executed for every single query call
+    let mut tera = Tera::default();
     tera.autoescape_on(vec![]); //TODO - This could protect from sql injection.  Need to investigate further
 
     tera.add_raw_template("sql", &app_cfg.sql).map_err(|e| {

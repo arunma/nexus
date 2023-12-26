@@ -56,7 +56,7 @@ impl UserRepository {
                 &email.into_parameter(),
             )?
             .expect("select statement must create a cursor");
-        if let Some(mut row) = cursor.next_row()? {
+        if let Some(mut _row) = cursor.next_row()? {
             Ok(true)
         } else {
             Ok(false)

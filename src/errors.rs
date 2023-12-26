@@ -9,8 +9,6 @@ use crate::errors::ApiError::{
 
 pub type ApiResult<T> = Result<T, ApiError>;
 
-//pub type ErrorMap = HashMap<String, Vec<String>>;
-
 //TODO - Cleanup
 #[derive(Error, Debug)]
 pub enum ApiError {
@@ -41,12 +39,13 @@ pub enum ApiError {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (status, error_message) = match self {
-            Unauthorized => (StatusCode::UNAUTHORIZED, Unauthorized.to_string()),
+            ApiError::Unauthorized(e) => (StatusCode::UNAUTHORIZED, e),
             InvalidLoginAttempt => (StatusCode::BAD_REQUEST, InvalidLoginAttempt.to_string()),
             NotFound(e) => (StatusCode::NOT_FOUND, e),
             BadRequest(e) => (StatusCode::BAD_REQUEST, e),
             InternalServerErrorWithContext(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
             ObjectConflict(e) => (StatusCode::CONFLICT, e),
+            ApiError::AnyhowError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
             _ => (StatusCode::INTERNAL_SERVER_ERROR, "Unexpected error".to_string()),
         };
 

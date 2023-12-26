@@ -42,7 +42,7 @@ impl DataRepository {
                 error!("Error while executing query: {}", e);
                 return Err(InternalServerErrorWithContext(format!(
                     "StatementExecutionError: {}",
-                    e.to_string()
+                    e
                 )));
             }
             Ok(None) => {

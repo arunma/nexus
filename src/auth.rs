@@ -69,7 +69,7 @@ fn verify_and_decode_jwt_token(token: &str, token_secret: &str) -> Result<Valida
         &DecodingKey::from_base64_secret(token_secret).map_err(|_e| StatusCode::INTERNAL_SERVER_ERROR)?,
         &validation,
     )
-    .map_err(|e| StatusCode::BAD_REQUEST)?;
+    .map_err(|_e| StatusCode::BAD_REQUEST)?;
 
     //FIXME - Need to figure out how best we could factor in the force-revoked tokens (yanked from Redis)
     // Update: TokenService is in the app_state. TokenService wraps TokenRepository, which must make this task easier.

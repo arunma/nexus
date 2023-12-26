@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::net::{AddrParseError, SocketAddr};
 
 use anyhow::Result as AResult;
-use clap::Parser;
 use config::{Config, Environment, FileFormat};
 use dotenv::dotenv;
 use secrecy::Secret;
@@ -33,7 +32,6 @@ pub struct DbConfig {
     pub warehouse: String,
     pub schema: String,
     pub role: String,
-    pub url: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -46,10 +44,6 @@ pub struct ApiConfig {
     pub access_token_secret: String,
     pub access_token_expires_in: String,
     pub access_token_max_age: usize,
-    /*#[serde(skip_serializing)] //No refresh token for now
-    pub refresh_token_secret: String,
-    pub refresh_token_expires_in: String,
-    pub refresh_token_max_age: usize,*/
     #[serde(skip_serializing)]
     pub password_salt: String,
 }
@@ -91,9 +85,6 @@ mod tests {
     #[test]
     fn test_file_and_dotenv_load() {
         let app_cfg = AppConfig::get_configuration("tests/test_customer_master.yaml").unwrap();
-        /*for (key, value) in env::vars() {
-            println!("{}: {}", key, value);
-        }*/
         assert_eq!(app_cfg.name, "customer_master");
         assert_eq!(app_cfg.api.endpoint, "/api/nexus/customer_master");
         assert_eq!(app_cfg.api.port, 8080);

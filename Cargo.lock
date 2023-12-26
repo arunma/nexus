@@ -410,42 +410,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum_sqlx_jwt_starter"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "axum 0.7.1",
- "axum-extra",
- "axum-macros",
- "axum-server",
- "axum-test",
- "axum_odbc",
- "base64 0.21.5",
- "chrono",
- "clap",
- "config",
- "dotenv",
- "jsonwebtoken",
- "metrics",
- "rand_core",
- "rust-argon2",
- "secrecy",
- "serde",
- "serde_json",
- "tera",
- "thiserror",
- "time",
- "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "tracing-test",
- "uuid",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1641,6 +1605,42 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c196769dd60fd4f363e11d948139556a344e79d451aeb2fa2fd040738ef7691"
 dependencies = [
  "jni-sys",
+]
+
+[[package]]
+name = "nexus"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum 0.7.1",
+ "axum-extra",
+ "axum-macros",
+ "axum-server",
+ "axum-test",
+ "axum_odbc",
+ "base64 0.21.5",
+ "chrono",
+ "clap",
+ "config",
+ "dotenv",
+ "jsonwebtoken",
+ "metrics",
+ "rand_core",
+ "rust-argon2",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "tera",
+ "thiserror",
+ "time",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-test",
+ "uuid",
 ]
 
 [[package]]

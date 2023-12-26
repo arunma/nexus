@@ -36,7 +36,7 @@ impl From<UserEntity> for UserDto {
 pub struct RegisterUserDto {
     pub name: String,
     pub email: String,
-    //#[serde(skip_serializing)]
+    #[serde(skip_serializing)]
     pub password: String,
 }
 

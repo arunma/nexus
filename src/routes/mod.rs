@@ -11,7 +11,7 @@ use axum::{middleware, BoxError, Json};
 use serde_json::json;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing::info;
 
