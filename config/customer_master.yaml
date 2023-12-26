@@ -1,0 +1,37 @@
+name: customer_master
+request:
+  customer_id: String
+response:
+  name: String
+  age: int
+  gender: String
+sql: |
+  select name,
+        age,
+        gender
+  from
+        nexus_db.public.customer_master
+  limit 10
+#Replace with {{customer_id}} in the sql
+db:
+  driver: SnowflakeDSIIDriver
+  hostname: nkiamin-ho49824.snowflakecomputing.com
+  username:
+  password:
+  database: nexus_db
+  schema: nexus
+  role: ACCOUNTADMIN
+  warehouse: nexus_wh
+
+api:
+  port: 8080
+  host: 0.0.0.0
+  endpoint: /api/nexus/customer_master
+  rust_log: info,sqlx=debug,tower_http=debug
+  access_token_secret: c3VwZXJfc2VjdXJlX2FjY2Vzc190b2tlbl9TRUNSRVQ=
+  access_token_expires_in: 15m
+  access_token_max_age: 15
+  refresh_token_secret: c3VwZXJfc2VjdXJlX3JlZnJlc2hfdG9rZW5fU0VDUkVU
+  refresh_token_expires_in: 60m
+  refresh_token_max_age: 60
+  password_salt: super_secure_password_salt

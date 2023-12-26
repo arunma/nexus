@@ -1,13 +1,15 @@
-use anyhow::Context;
-use clap::Parser;
+use anyhow::{anyhow, Context};
+use axum_odbc::ODBCConnectionManager;
 use dotenv::dotenv;
-use redis::Client;
-use sqlx::postgres::PgPoolOptions;
+use secrecy::ExposeSecret;
+use tera::Tera;
+use tracing::error;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
 
-use axum_sqlx_jwt_starter::config::Config;
+use axum_sqlx_jwt_starter::config::{AppConfig, DbConfig};
+use axum_sqlx_jwt_starter::errors::ApiError;
 use axum_sqlx_jwt_starter::routes::AppController;
 use axum_sqlx_jwt_starter::service_register::ServiceRegister;
 use axum_sqlx_jwt_starter::AppState;
@@ -16,30 +18,51 @@ use axum_sqlx_jwt_starter::AppState;
 async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
-    let config = Config::parse();
-    let api_host = config.api_host.to_string();
-    let api_port = config.api_port;
+    let config = AppConfig::get_configuration("config/customer_master.yaml")?; //TODO - get as args
+    let api_host = config.api.host.to_string();
+    let api_port = config.api.port;
 
     tracing_subscriber::registry()
-        .with(EnvFilter::new(&config.rust_log))
+        .with(EnvFilter::new(&config.api.rust_log))
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let db = PgPoolOptions::new()
-        .max_connections(10)
-        .connect(&config.database_url)
-        .await
-        .context("Could not connect to the database with the provided database_url")?;
+    let pool = create_db_manager(&config.db);
+    let tera = create_tera(&config).unwrap();
+    let app_state = AppState::new(config.clone());
 
-    let redis =
-        Client::open(config.redis_url.clone()).context("Unable to connect to redis using the provided redis_url")?;
-
-    let app_state = AppState::new(config.clone(), db.clone(), redis);
-    let service_register = ServiceRegister::new(app_state.clone());
+    let service_register = ServiceRegister::new(config, pool, tera);
 
     AppController::serve(app_state, service_register)
         .await
         .context(format!("Unable to start server at host:port {}:{}", api_host, api_port))?;
 
     Ok(())
+}
+
+pub fn create_db_manager(db_cfg: &DbConfig) -> ODBCConnectionManager {
+    let db_url = format!(
+        "Driver={};server={};database={};schema={};warehouse={};role={};UID={};PWD={}",
+        db_cfg.driver,
+        db_cfg.hostname,
+        db_cfg.database,
+        db_cfg.schema,
+        db_cfg.warehouse,
+        db_cfg.role,
+        db_cfg.username,
+        db_cfg.password.expose_secret()
+    );
+    ODBCConnectionManager::new(db_url, 4)
+}
+
+fn create_tera(app_cfg: &AppConfig) -> Result<Tera, ApiError> {
+    let mut tera = Tera::default(); //This needs to go up.  Currently this is getting executed for every single query call
+    tera.autoescape_on(vec![]); //TODO - This could protect from sql injection.  Need to investigate further
+
+    tera.add_raw_template("sql", &app_cfg.sql).map_err(|e| {
+        error!("Error while rendering template: {}", e);
+        anyhow!(format!("SqlTemplatingError {}", e.to_string()))
+    })?;
+
+    Ok(tera)
 }

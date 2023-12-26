@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::domain::{LoginUserDto, UserDto};
@@ -11,3 +13,5 @@ pub struct LoginUserRequest {
 pub struct LoginUserResponse {
     pub user: UserDto,
 }
+
+pub type DataResponse = Vec<HashMap<String, String>>;

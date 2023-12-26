@@ -9,3 +9,4 @@ target/
 /dataSources.local.xml
 .idea
 .sqlx
+.env

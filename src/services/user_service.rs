@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use tracing::error;
-use uuid::Uuid;
 
 use crate::domain::{LoginUserDto, RegisterUserDto, UserDto};
 use crate::errors::{ApiError, ApiResult};
@@ -28,7 +27,7 @@ impl UserService {
             token_service,
         }
     }
-    pub async fn register_user_handler(&self, register_user: RegisterUserDto) -> ApiResult<UserDto> {
+    pub async fn create_user_handler(&self, register_user: RegisterUserDto) -> ApiResult<String> {
         let existing_user = self.user_repository.does_user_exist(&register_user.email).await;
 
         if let Err(_e) = existing_user {
@@ -39,12 +38,7 @@ impl UserService {
         }
 
         let hashed_password = self.security_service.hash_password(&register_user.password)?;
-
-        let created_user = self.user_repository.create_user(register_user, hashed_password).await?;
-
-        let user = created_user.into();
-
-        Ok(user)
+        Ok(self.user_repository.create_user(register_user, hashed_password).await?)
     }
 
     pub async fn login_user_handler(&self, login_user: LoginUserDto) -> ApiResult<UserDto> {
@@ -65,16 +59,16 @@ impl UserService {
         }
 
         let access_token = self.token_service.generate_access_token(user.id.clone()).await?;
-        let refresh_token = self.token_service.generate_refresh_token(user.id.clone()).await?;
+        //let refresh_token = self.token_service.generate_refresh_token(user.id.clone()).await?;
 
         let mut user_dto: UserDto = user.into();
         user_dto.access_token = Some(access_token);
-        user_dto.refresh_token = Some(refresh_token);
+        //user_dto.refresh_token = Some(refresh_token);
 
         Ok(user_dto)
     }
 
-    pub async fn get_user(&self, user_id: Uuid) -> ApiResult<UserDto> {
+    pub async fn get_user(&self, user_id: &str) -> ApiResult<UserDto> {
         let user = self.user_repository.get_user_by_id(user_id).await;
         if let Err(_e) = user {
             error!("User with userid does not exist: {}", &user_id);

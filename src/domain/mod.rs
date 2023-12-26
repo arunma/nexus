@@ -1,19 +1,15 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::repositories::user_repository::UserEntity;
 
-pub mod requests;
+pub mod req_res;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserDto {
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     pub email: String,
-    pub role: String,
-    pub photo: String,
-    pub verified: bool,
     #[serde(rename = "createdAt")]
     pub created_at: Option<DateTime<Utc>>,
     #[serde(rename = "updatedAt")]
@@ -28,9 +24,6 @@ impl From<UserEntity> for UserDto {
             id: entity.id,
             name: entity.name,
             email: entity.email,
-            role: entity.role,
-            photo: entity.photo,
-            verified: false,
             created_at: entity.created_at,
             updated_at: entity.updated_at,
             access_token: None,

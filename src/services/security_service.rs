@@ -1,19 +1,19 @@
 use std::sync::Arc;
+use crate::config::{ApiConfig, AppConfig};
 
-use crate::config::Config;
 use crate::errors::{ApiError, ApiResult};
 
 #[derive(Clone)]
 pub struct SecurityService {
-    config: Arc<Config>,
+    config: Arc<AppConfig>,
 }
 
 impl SecurityService {
-    pub fn new(config: Arc<Config>) -> Self {
+    pub fn new(config: Arc<AppConfig>) -> Self {
         Self { config }
     }
     pub fn hash_password(&self, password: &str) -> ApiResult<String> {
-        let salt = &self.config.password_salt;
+        let salt = &self.config.api.password_salt;
         argon2::hash_encoded(password.as_bytes(), salt.as_bytes(), &argon2::Config::default())
             .map_err(|_e| ApiError::InternalServerErrorWithContext("Unable to hash password".to_string()))
     }

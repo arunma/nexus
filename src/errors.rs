@@ -1,9 +1,10 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use axum_odbc::odbc;
 use thiserror::Error;
 
 use crate::errors::ApiError::{
-    BadRequest, InternalServerErrorWithContext, InvalidLoginAttempt, NotFound, ObjectConflict, Unauthorized,
+    BadRequest, InternalServerErrorWithContext, InvalidLoginAttempt, NotFound, ObjectConflict,
 };
 
 pub type ApiResult<T> = Result<T, ApiError>;
@@ -13,8 +14,8 @@ pub type ApiResult<T> = Result<T, ApiError>;
 //TODO - Cleanup
 #[derive(Error, Debug)]
 pub enum ApiError {
-    #[error("authentication is required to access this resource")]
-    Unauthorized,
+    #[error("authentication is required to access this resource: {0}")]
+    Unauthorized(String),
     #[error("username or password is incorrect")]
     InvalidLoginAttempt,
     #[error("user does not have privilege to access this resource")]
@@ -33,6 +34,8 @@ pub enum ApiError {
     ObjectConflict(String),
     #[error(transparent)]
     AnyhowError(#[from] anyhow::Error),
+    #[error("error executing query in the database")]
+    QueryExecutionError(#[from] odbc::Error),
 }
 
 impl IntoResponse for ApiError {

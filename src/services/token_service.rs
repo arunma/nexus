@@ -1,21 +1,14 @@
-use std::str::FromStr;
-use std::sync::Arc;
-
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
-use redis::Client;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::config::Config;
+use crate::config::AppConfig;
 use crate::errors::{ApiError, ApiResult};
-use crate::repositories::token_repository::TokenRepository;
 
 #[derive(Clone)]
 pub struct TokenService {
-    config: Config,
-    token_repository: Arc<TokenRepository>,
+    config: AppConfig,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -31,19 +24,16 @@ pub struct TokenClaims {
 pub struct TokenDetails {
     pub token: String,
     pub token_uuid: Uuid,
-    pub user_id: Uuid,
+    pub user_id: String,
     pub expires_in: i64,
 }
 
 impl TokenService {
-    pub fn new(config: Config, redis: Client, db:PgPool) -> Self {
-        Self {
-            config,
-            token_repository: Arc::new(TokenRepository::new(redis.clone(), db.clone())),
-        }
+    pub fn new(config: AppConfig) -> Self {
+        Self { config }
     }
 
-    fn generate_jwt_token(&self, user_id: Uuid, token_secret: &str, max_age: i64) -> ApiResult<TokenDetails> {
+    fn generate_jwt_token(&self, user_id: String, token_secret: &str, max_age: i64) -> ApiResult<TokenDetails> {
         let now = Utc::now();
         let expires_in = (now + Duration::minutes(max_age)).timestamp();
         let token_uuid = Uuid::new_v4();
@@ -52,7 +42,7 @@ impl TokenService {
             exp: expires_in,
             iat: now.timestamp(),
             nbf: now.timestamp(),
-            sub: user_id.to_string(),
+            sub: user_id.clone(),
             token_uuid: token_uuid.to_string(),
         };
 
@@ -75,33 +65,23 @@ impl TokenService {
         Ok(token_details)
     }
 
-    pub async fn generate_access_token(&self, user_id: Uuid) -> ApiResult<String> {
+    pub async fn generate_access_token(&self, user_id: String) -> ApiResult<String> {
         let token_details = self.generate_jwt_token(
             user_id,
-            &self.config.access_token_secret,
-            self.config.access_token_max_age,
+            &self.config.api.access_token_secret,
+            self.config.api.access_token_max_age as i64,
         )?;
-
-        let _ = self
-            .token_repository
-            .save_token_to_redis(&token_details, self.config.access_token_max_age)
-            .await;
 
         Ok(token_details.token)
     }
 
-    pub async fn generate_refresh_token(&self, user_id: Uuid) -> ApiResult<String> {
+    /*pub async fn generate_refresh_token(&self, user_id: Uuid) -> ApiResult<String> {
         let token_details = self.generate_jwt_token(
             user_id,
             &self.config.refresh_token_secret,
             self.config.refresh_token_max_age,
         )?;
 
-        let _ = self
-            .token_repository
-            .save_token_to_redis(&token_details, self.config.refresh_token_max_age)
-            .await;
-
         Ok(token_details.token)
-    }
+    }*/
 }
